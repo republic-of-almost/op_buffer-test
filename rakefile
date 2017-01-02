@@ -1,0 +1,126 @@
+
+FILES = Dir["./**/*.cpp"]
+
+INC_DIRS = [
+  "./",
+  "./test",
+  "./include",
+  "/Users/PhilCK/Developer/math",
+  "/usr/local/include",
+]
+
+LIB_DIRS = [
+  "/usr/local/lib",
+]
+
+FLAGS = [
+  "-std=c++14",
+  "-fno-rtti",
+  "-fno-exceptions",
+]
+
+DEFINES = [
+  # "OP_BUFFER_API_TEST",
+  "OP_BUFFER_API_OGL",
+  "OP_BUFFER_API_OGL_EXTRA_CHECKS",
+  "OP_BUFFER_LOG_INFO",
+  "OP_BUFFER_LOG_ERRORS",
+]
+
+LIBS = [
+  "sdl2",
+  # "dl",
+]
+
+OUT_DIR = "bin/"
+
+
+desc "Builds GL3/4 buffer test"
+task :build_mac do |t, args|
+
+  MAC_DEFINES = [
+    "OP_BUFFER_TEST_DEBUG_UI",
+  ]
+
+  MAC_FRAMEWORKS = [
+    "OpenGL",
+  ]
+
+  MAC_FLAGS = [
+    "-g",
+  ]
+
+  # Build data
+  files      = FILES.join(" ")
+  inc_dirs   = INC_DIRS.map{|i| "-I #{i}"}.join(" ")
+  lib_dirs   = LIB_DIRS.map{|l| "-L #{l}"}.join(" ")
+  flags      = (FLAGS + MAC_FLAGS).join(" ")
+  defines    = (DEFINES + MAC_DEFINES).map{|d| "-D#{d}"}.join(" ")
+  link_opts  = ""
+  frameworks = MAC_FRAMEWORKS.map{|f| "-framework #{f}"}.join(" ")
+  libs       = LIBS.map{|l| "-l#{l}"}.join(" ")
+  extra      = ""
+
+  cc = "clang++"
+  out = OUT_DIR + "mac/op_test"
+
+  cmd = "#{cc} #{files} #{inc_dirs} #{lib_dirs} #{libs} #{link_opts} #{frameworks} #{extra} #{defines} #{flags} -o #{out}"
+  puts cmd
+  system cmd
+
+end
+
+desc "Builds WebGL buffer test"
+task :build_web do |t, args|
+
+  EM_LINK_OPTS = [
+    "FULL_ES2=1",
+    "USE_SDL=2",
+    "SAFE_HEAP=1",
+    "INCLUDE_FULL_LIBRARY=1",
+  ]
+
+  EM_DEFINES = [
+    "OP_BUFFER_API_OGL_ES2",
+  ]
+
+  EM_FLAGS = [
+    "-O2",
+  ]
+
+  EM_FILES = [
+    "test/test1.png@/Users/PhilCK/Developer/bop/test/test1.png",
+    "test/test2.png@/Users/PhilCK/Developer/bop/test/test2.png",
+  ]
+
+  EM_FUNCTIONS = [
+    "main",
+    "resize",
+    "test_name",
+    "test_desc",
+  ]
+
+  # Build data
+  files      = FILES.join(" ")
+  inc_dirs   = INC_DIRS.map{|i| "-I #{i}"}.join(" ")
+  lib_dirs   = LIB_DIRS.map{|l| "-L #{l}"}.join(" ")
+  flags      = (FLAGS + EM_FLAGS).join(" ")
+  defines    = (DEFINES + EM_DEFINES).map{|d| "-D#{d}"}.join(" ")
+  link_opts  = EM_LINK_OPTS.map{|l| "-s #{l}"}.join(" ")
+  frameworks = ""
+  libs       = LIBS.map{|l| "-l#{l}"}.join(" ")
+  fs_files   = EM_FILES.map{|f| "--preload-file #{f}"}.join(" ")
+
+  functions  = "-s EXPORTED_FUNCTIONS='[#{EM_FUNCTIONS.map{|f| "\"_#{f}\""}.join(", ")}]'"
+  extra      = functions
+
+
+  cc = "/Users/PhilCK/Developer/emsdk_portable/emscripten/1.35.0/em++"
+  out = OUT_DIR + "web/op.js"
+
+
+  cmd = "#{cc} #{files} #{inc_dirs} #{lib_dirs} #{libs} #{link_opts} #{frameworks} #{fs_files} #{extra} #{defines} #{flags} -o #{out}"
+  puts cmd
+  system cmd
+
+end
