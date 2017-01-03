@@ -159,46 +159,28 @@ app_init()
   // -- Setup Buffer -- //
   uint32_t alloc_count = 0;
 
-  opContextAllocCallback([](size_t requested_size, uintptr_t user_data)
+  opCallbackAlloc([](size_t requested_size, uintptr_t user_data)
   {
     *reinterpret_cast<uint32_t*>(user_data) += 1;
     return malloc(requested_size);
   });
 
-  opContextResizeCallback([](size_t requested_size, void *old_data, uintptr_t user_data)
+  opCallbackResize([](size_t requested_size, void *old_data, uintptr_t user_data)
   {
     *reinterpret_cast<uint32_t*>(user_data) += 1;
     return realloc(old_data, requested_size);
   });
 
-  opContextDestroyCallback([](void *data, uintptr_t user_data)
+  opCallbackDestroy([](void *data, uintptr_t user_data)
   {
     *reinterpret_cast<uint32_t*>(user_data) += 1;
     free(data);
   });
 
-  opContextUserData((uintptr_t)&alloc_count);
+  opCallbackUserData((uintptr_t)&alloc_count);
+
+  
   context = opContextCreate();
-
-  opBufferAllocCallback([](size_t requested_size, uintptr_t user_data)
-  {
-    *reinterpret_cast<uint32_t*>(user_data) += 1;
-    return malloc(requested_size);
-  });
-
-  opBufferResizeCallback([](size_t requested_size, void *old_data, uintptr_t user_data)
-  {
-    *reinterpret_cast<uint32_t*>(user_data) += 1;
-    return realloc(old_data, requested_size);
-  });
-
-  opBufferDestroyCallback([](void *data, uintptr_t user_data)
-  {
-    *reinterpret_cast<uint32_t*>(user_data) += 1;
-    free(data);
-  });
-
-  opBufferUserData((uintptr_t)&alloc_count);
   buffer = opBufferCreate();
 
 

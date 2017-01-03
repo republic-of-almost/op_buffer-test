@@ -1,8 +1,9 @@
 
-FILES = Dir["./**/*.cpp"]
+FILES = Dir["./**/*.cpp"] + Dir["../op_buffer/**/*.cpp"]
 
 INC_DIRS = [
   "./",
+  "../op_buffer/include",
   "./test",
   "./include",
   "/Users/PhilCK/Developer/math",
@@ -38,6 +39,12 @@ OUT_DIR = "bin/"
 desc "Builds GL3/4 buffer test"
 task :build_mac do |t, args|
 
+
+  platform = "mac"
+  out_dir = "#{OUT_DIR}#{platform}/"
+
+  Dir.mkdir(out_dir) unless File.exists?(out_dir)
+
   MAC_DEFINES = [
     "OP_BUFFER_TEST_DEBUG_UI",
   ]
@@ -62,7 +69,7 @@ task :build_mac do |t, args|
   extra      = ""
 
   cc = "clang++"
-  out = OUT_DIR + "mac/op_test"
+  out = out_dir + "op_test"
 
   cmd = "#{cc} #{files} #{inc_dirs} #{lib_dirs} #{libs} #{link_opts} #{frameworks} #{extra} #{defines} #{flags} -o #{out}"
   puts cmd
@@ -72,6 +79,11 @@ end
 
 desc "Builds WebGL buffer test"
 task :build_web do |t, args|
+  
+  platform = "web"
+  out_dir = "#{OUT_DIR}#{platform}/"
+
+  Dir.mkdir(out_dir) unless File.exists?(out_dir)
 
   EM_LINK_OPTS = [
     "FULL_ES2=1",
@@ -116,7 +128,7 @@ task :build_web do |t, args|
 
 
   cc = "/Users/PhilCK/Developer/emsdk_portable/emscripten/1.35.0/em++"
-  out = OUT_DIR + "web/op.js"
+  out = out_dir + "op.js"
 
 
   cmd = "#{cc} #{files} #{inc_dirs} #{lib_dirs} #{libs} #{link_opts} #{frameworks} #{fs_files} #{extra} #{defines} #{flags} -o #{out}"

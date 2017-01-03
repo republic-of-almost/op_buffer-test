@@ -216,11 +216,14 @@ test_init(opContext *context,
     Texture
   */
   int width, height, comp;
-  stbi_uc *img = stbi_load("/Users/PhilCK/Developer/bop/test/test1.png",
-                           &width,
-                           &height,
-                           &comp,
-                           0);
+  stbi_uc *img = stbi_load
+  (
+    "/Users/PhilCK/Developer/op_buffer_test/test/test1.png",
+    &width,
+    &height,
+    &comp,
+    0
+  );
 
   if(!img)
   {
