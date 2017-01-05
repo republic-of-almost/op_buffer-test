@@ -179,7 +179,7 @@ app_init()
 
   opCallbackUserData((uintptr_t)&alloc_count);
 
-  
+
   context = opContextCreate();
   buffer = opBufferCreate();
 

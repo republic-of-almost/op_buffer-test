@@ -79,7 +79,7 @@ end
 
 desc "Builds WebGL buffer test"
 task :build_web do |t, args|
-  
+
   platform = "web"
   out_dir = "#{OUT_DIR}#{platform}/"
 
@@ -101,8 +101,8 @@ task :build_web do |t, args|
   ]
 
   EM_FILES = [
-    "test/test1.png@/Users/PhilCK/Developer/bop/test/test1.png",
-    "test/test2.png@/Users/PhilCK/Developer/bop/test/test2.png",
+    "test/test1.png@/Users/PhilCK/Developer/op_buffer_test/bin/web/test1.png",
+    "test/test2.png@/Users/PhilCK/Developer/op_buffer_test/bin/web/test2.png",
   ]
 
   EM_FUNCTIONS = [

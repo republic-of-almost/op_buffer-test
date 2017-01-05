@@ -6,17 +6,18 @@
 
 namespace
 {
-  opID shader_id  ;// = 0
-  opID shd_tex_id ;// = 0
-  opID shd_wvp_id ;// = 0
-  opID target_id  ;// = 0
-  opID vertex_id  ;// = 0
-  opID geometry_id;// = 0
-  opID index_id   ;// = 0
-  opID inedex_id  ;// = 0
-  opID raster_id  ;// = 0
-  opID texture_id ;// = 0
-  opID filter_id  ;// = 0
+  opID shader_id   = 0;
+  opID shd_tex_id  = 0;
+  opID shd_wvp_id  = 0;
+  opID target_id   = 0;
+  opID vertex_id   = 0;
+  opID geometry_id = 0;
+  opID index_id    = 0;
+  opID inedex_id   = 0;
+  opID raster_id   = 0;
+  opID texture_id  = 0;
+  opID texture2_id = 0;
+  opID filter_id   = 0;
 }
 
 #ifdef __EMSCRIPTEN__
@@ -72,7 +73,7 @@ test_init(opContext *context,
     #define SAMPLE_2D(tex, uv) texture2D(tex, uv)
     #define OUTPUT varying
     #define FRAG_OUT
-    #define FRAG_COL_SET(v) gl_FragColor = v;
+    #define FRAG_COL_SET(v) gl_FragColor = v
   )GLSL";
   #else
   constexpr char glsl_header[] = R"GLSL(
@@ -104,6 +105,8 @@ test_init(opContext *context,
   )GLSL";
 
   constexpr char ps[] = R"GLSL(
+    precision mediump float;
+
     FRAG_IN vec2 frag_tex_coord;
 
     uniform sampler2D diffuse;
@@ -178,7 +181,7 @@ test_init(opContext *context,
     vertex_count,
     &geo_desc
   );
-  assert(geometry_id.type);
+  assert(geometry_id);
 
   /*
     Index
@@ -199,7 +202,7 @@ test_init(opContext *context,
     6,
     &index_desc
   );
-  assert(index_id.type);
+  assert(index_id);
 
   /*
     Rasterizer
@@ -227,7 +230,7 @@ test_init(opContext *context,
 
   if(!img)
   {
-    printf("NO Image\n");
+    printf("NO test1.png\n");
   }
 
   opTextureDesc texture_desc;
@@ -251,6 +254,41 @@ test_init(opContext *context,
 
   texture_id = opBufferTextureCreate(context, buffer, img, &texture_desc);
 
+  stbi_uc *img2 = stbi_load
+  (
+    "/Users/PhilCK/Developer/op_buffer_test/test/test2.png",
+    &width,
+    &height,
+    &comp,
+    0
+  );
+
+  if(!img2)
+  {
+    printf("NO test2.png\n");
+  }
+
+  opTextureDesc texture_desc2;
+  memset(&texture_desc2, 0, sizeof(texture_desc2));
+  texture_desc2.width = width;
+  texture_desc2.height = height;
+  texture_desc2.dimention = opDimention_TWO;
+
+  if(comp == 1) {
+    texture_desc2.format = opPixelFormat_R8;
+  }
+  else if(comp == 2) {
+    texture_desc2.format = opPixelFormat_RG8;
+  }
+  else if(comp == 3) {
+    texture_desc2.format = opPixelFormat_RGB8;
+  }
+  else if(comp == 4) {
+    texture_desc2.format = opPixelFormat_RGBA8;
+  }
+
+  texture2_id = opBufferTextureCreate(context, buffer, img2, &texture_desc2);
+
   /*
     Texture Filter
   */
@@ -266,9 +304,17 @@ test_init(opContext *context,
   opBufferExec(context, buffer);
 
   /*
+    UpdateTexture
+  */
+// opBufferTextureUpdate(opContext *ctx, opBuffer *buf, const opID id, const size_t offset_x, const size_t offset_y, const size_t offset_z, const size_t width, const size_t height, const size_t depth, void *data);
+  opBufferTextureUpdate(context, buffer, texture_id, 0, 0, 512, 512, img2);
+  opBufferExec(context, buffer);
+
+  /*
     Clean up
   */
   stbi_image_free(img);
+  stbi_image_free(img2);
 }
 
 
